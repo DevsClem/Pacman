@@ -1,0 +1,353 @@
+<html>
+
+<head>
+    <title>Pacman Demo</title>
+    <style type="text/css">
+        body{
+            background-color: black;
+            margin: 0px;
+        }
+        div.row div{
+            width: 20px;
+            height: 20px;
+            /* border: 1px solid black; */
+            display: inline-block;
+        }
+        div.brick{
+            background-color: blue;
+        }
+        div.coin{
+            background-image: url('img/coin.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 5px;
+        }
+        div#pacman{
+            background-image: url('img/pacman.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            width:  20px;
+            height: 20px;
+            position: absolute;
+        }
+        div.empty{
+            background-position: center;
+        }
+        div#score{
+            border: 1px solid white;
+            width: 30px;
+            height: 20px;
+            color: white;
+            padding: 7px;
+            text-align: center;
+            position: absolute;
+            top: 10px;
+            left: 650px;
+        }
+        div.cherry{
+            background-image: url('img/cherry.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+        }
+        div#ghost1{
+            background-image: url('img/ghost1.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            width:  20px;
+            height: 20px;
+            position: absolute;
+        }
+        div#ghost2{
+            background-image: url('img/ghost2.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            width:  20px;
+            height: 20px;
+            position: absolute;
+        }
+        div#ghost3{
+            background-image: url('img/ghost3.gif');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            width:  20px;
+            height: 20px;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id='world'></div>
+        <div id="pacman"></div>
+        <div id="score">0</div>
+        <div id="ghost1"></div>
+        <div id="ghost2"></div>
+        <div id="ghost3"></div>
+        <div id="ghost4"></div>
+    </div>
+
+    <script>
+        var world1 = [
+            [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+            [2,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+            [2,1,2,2,2,2,2,2,2,2,2,1,2,2,2,1,2,2,2,1,2,1,2,1,2,2,2,2,2,1,2],
+            [2,1,2,1,1,1,1,1,1,1,2,1,2,2,2,1,2,2,2,1,2,1,2,1,2,0,0,0,0,1,2],
+            [2,1,2,1,2,2,3,2,2,1,2,1,2,3,1,1,1,3,2,1,2,1,2,1,2,2,2,2,2,1,2],
+            [2,1,2,1,2,2,2,2,2,1,2,1,2,2,2,2,2,2,2,1,2,2,2,1,1,1,1,1,1,1,2],
+            [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,2,1,2,1,2],
+            [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+        ];
+        var world2 = [
+            [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+            [2,0,1,1,2,1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,2,1,2,1,2,1,2,1,1,1,2],
+            [2,1,2,1,2,1,2,1,2,1,2,1,2,2,2,2,2,2,2,1,1,1,1,1,2,1,2,1,2,1,2],
+            [2,1,2,1,1,1,2,1,2,1,2,1,1,1,1,1,1,1,1,1,2,1,2,1,2,1,1,1,2,1,2],
+            [2,1,2,1,2,1,2,1,2,1,1,1,2,2,2,2,2,2,2,1,2,1,2,1,2,1,2,1,2,1,2],
+            [2,1,2,1,2,1,1,1,2,1,2,1,1,1,1,1,1,1,1,1,2,1,2,1,2,1,2,1,2,1,2],
+            [2,1,1,1,2,1,2,1,2,1,2,2,2,2,2,1,2,2,2,2,2,1,2,1,1,1,2,1,1,1,2],
+            [2,1,2,1,2,1,2,1,2,1,2,2,2,2,2,1,2,2,2,2,2,1,2,1,2,1,2,1,2,1,2],
+            [2,1,2,1,1,1,2,1,2,1,2,3,1,1,1,1,1,1,1,3,2,1,2,1,1,1,1,1,2,1,2],
+            [2,1,2,1,2,1,2,1,2,1,2,2,2,2,2,1,2,2,2,2,2,1,2,1,2,1,2,1,2,1,2],
+            [2,1,2,1,2,1,2,1,1,1,2,1,1,1,1,1,1,1,1,1,2,1,1,1,2,1,2,1,2,1,2],
+            [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+            
+        ];
+        var world3 = [
+            [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+            [2,0,1,1,1,1,1,1,1,1,1,1,1,3,2,0,2],
+            [2,1,2,2,2,2,2,2,2,2,2,2,2,1,2,0,2],
+            [2,1,1,1,1,1,1,1,1,1,1,1,1,1,2,0,2],
+            [2,1,2,2,2,2,2,2,2,2,2,2,2,1,0,0,2],
+            [2,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2],
+            [2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+            [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+            [2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2],
+            [2,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+            [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+            
+        ];
+        var world4 = [
+            [2,2,2,2,2,2,2,2,2,2],
+            [2,0,1,1,1,1,1,1,1,2],
+            [2,1,2,2,0,0,2,2,1,2],
+            [2,1,2,1,1,1,1,2,1,2],
+            [2,1,2,1,2,2,1,2,1,2],
+            [2,1,2,1,1,1,1,2,1,2],
+            [2,1,2,2,3,3,2,2,1,2],
+            [2,1,2,1,1,1,1,2,1,2],
+            [2,1,2,1,2,2,1,2,1,2],
+            [2,1,2,1,1,1,1,2,1,2],
+            [2,1,2,2,0,0,2,2,1,2],
+            [2,1,1,1,1,1,1,1,1,2],
+            [2,1,2,2,0,0,2,2,1,2],
+            [2,1,2,1,1,1,1,2,1,2],
+            [2,1,2,1,2,2,1,2,1,2],
+            [2,1,2,1,1,1,1,2,1,2],
+            [2,1,2,2,3,3,2,2,1,2],
+            [2,1,2,1,1,1,1,2,1,2],
+            [2,1,2,1,2,2,1,2,1,2],
+            [2,1,2,1,1,1,1,2,1,2],
+            [2,1,2,2,0,0,2,2,1,2],
+            [2,1,1,1,1,1,1,1,1,2],
+            [2,2,2,2,2,2,2,2,2,2],
+        ];
+        var world5 = [
+            [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+            [2,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+            [2,1,2,2,2,2,1,2,1,2,2,2,1,2,2,2,2,2,1,2,2,2,1,2,2,2,1,2,2,2,1,2],
+            [2,1,2,1,1,1,1,2,1,2,3,1,1,2,1,2,1,2,1,2,3,1,1,2,1,2,1,1,2,1,1,2],
+            [2,1,2,2,2,2,1,2,1,2,2,2,1,2,1,2,1,2,1,2,2,2,1,2,1,2,1,1,2,1,1,2],
+            [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2],
+            [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
+        ];
+        var score = 0;
+        var worldScore = 0;
+        var pacman = {
+            x: 1,
+            y: 1
+        };
+        var direction = "right";
+        var randomWorld = [world1,world2,world3,world4,world5];
+        var world = randomWorld[(Math.floor(Math.random()*randomWorld.length))]; //get random world   
+
+        for(var i=0; i<world.length; i++){
+            for(var j=0; j<world[i].length; j++){
+                if(world[i][j] == 1){
+                    worldScore += 10;
+                } 
+                else if(world[i][j] == 3){
+                    worldScore += 20;
+                }
+            }
+        }
+        var ghost1 = {
+            x: 1, y: 1, name: 'ghost1',
+        };
+        var ghost2 = {
+            x: 1, y: 1, name: 'ghost2',
+        };
+        var ghost3 = {
+            x: 1, y: 1, name: 'ghost3',
+        };
+        if(world == world1){
+            ghost1.x = 25;
+            ghost1.y = 3;
+            ghost2.x = 15;
+            ghost2.y = 4;
+            ghost3.x = 6;
+            ghost3.y = 4;
+        }
+        else if(world == world2){
+            ghost1.x = 29;
+            ghost1.y = 1;
+            ghost2.x = 15;
+            ghost2.y = 4;
+            ghost3.x = 6;
+            ghost3.y = 4;
+        }
+        else if(world == world3){
+            ghost1.x = 15;
+            ghost1.y = 9;
+            ghost2.x = 15;
+            ghost2.y = 4;
+            ghost3.x = 6;
+            ghost3.y = 4;
+        }
+        else if(world == world4){
+            ghost1.x = 1;
+            ghost1.y = 21;
+            ghost2.x = 8;
+            ghost2.y = 21;
+            ghost3.x = 6;
+            ghost3.y = 4;
+        }
+        else if(world == world5){
+            ghost1.x = 30;
+            ghost1.y = 1;
+            ghost2.x = 10;
+            ghost2.y = 3;
+            ghost3.x = 20;
+            ghost3.y = 3;
+        }
+
+        function displayWorld(){
+            var output = '';
+            for (var i = 0; i < world.length; i++) {
+                output += "\n<div class='row'>\n"
+                for (var j = 0; j < world[i].length; j++) {
+                    if (world[i][j] == 2) {
+                        output += "<div class='brick'></div>";
+                    }
+                    else if (world[i][j] == 1) {
+                        output += "<div class='coin'></div>";
+                    }
+                    else if (world[i][j] == 0) {
+                        output += "<div class='empty'></div>";
+                    }
+                    else if (world[i][j] == 3) {
+                        output += "<div class='cherry'></div>";
+                    }
+                }
+                output += "\n</div>";
+            }
+            document.getElementById('world').innerHTML = output;
+        }
+        function displayPacman(){
+            document.getElementById('pacman').style.left = pacman.x*20+"px";
+            document.getElementById('pacman').style.top = pacman.y*20+"px";
+            document.getElementById('pacman').style.backgroundImage = "url('img/pacman-"+direction+".gif')";
+        }
+
+        function displayScore(){
+            document.getElementById('score').innerHTML = score;
+        }
+        function displayGhost(ghost){
+            document.getElementById(ghost.name).style.left = (ghost.x*20)+"px";
+            document.getElementById(ghost.name).style.top = (ghost.y*20)+"px";
+            document.getElementById(ghost.name).style.backgroundImage = "url('img/"+ghost.name+".gif')";
+        }
+
+        function endGame(message){
+            clearInterval(loop);
+            window.confirm(message);
+            location.reload();
+        }
+        
+        function moveGhost(ghost){
+            var ghostMove = Math.floor(Math.random()*4 + 1);
+            if(ghostMove == 1 && world[ghost.y][ghost.x-1] != 2){ //left
+                ghost.x--;
+            }
+            else if(ghostMove == 2 && world[ghost.y][ghost.x+1] != 2){ //right
+                ghost.x++;
+            }
+            else if(ghostMove == 3 && world[ghost.y-1][ghost.x] != 2){ //up
+                ghost.y--;
+            }
+            else if(ghostMove == 4 && world[ghost.y+1][ghost.x] != 2){//down
+                ghost.y++;
+            }
+            if(ghost.y  == pacman.y  && ghost.x == pacman.x){
+                endGame("Game Over");
+            }
+            displayGhost(ghost); 
+        }
+        displayWorld();
+        displayPacman();
+        displayScore();
+        displayGhost(ghost1);
+        displayGhost(ghost2); 
+        displayGhost(ghost3); 
+  
+        function gameLoop(){
+            moveGhost(ghost1);
+            moveGhost(ghost2);
+            moveGhost(ghost3);
+        }
+        var loop = setInterval(gameLoop, 250);
+
+        document.onkeydown = function(e){
+            if(e.keyCode == 37 && world[pacman.y][pacman.x-1] != 2){ //left
+                pacman.x--;
+                direction = 'left';
+            }
+            else if(e.keyCode == 39 && world[pacman.y][pacman.x+1] != 2){ //right
+                pacman.x++;
+                direction = 'right';
+            }
+            else if(e.keyCode == 38 && world[pacman.y-1][pacman.x] != 2){ //up
+                pacman.y--;
+                direction = 'up';
+            }
+            else if(e.keyCode == 40  && world[pacman.y+1][pacman.x] != 2){//down
+                pacman.y++;
+                direction = 'down';
+            }
+            displayPacman();
+            if(world[pacman.y][pacman.x] == 1){
+                world[pacman.y][pacman.x] = 0;
+                score+=10;
+                displayWorld();
+                displayScore();
+            }
+            else if(world[pacman.y][pacman.x] == 3){
+                world[pacman.y][pacman.x] = 0;
+                score+=20;
+                displayWorld();
+                displayScore();
+            }
+
+            if(score == worldScore){
+                endGame("You Win \nScore: " + score);
+            }
+
+            
+        } 
+    </script>
+</body>
+</html>
